@@ -1,4 +1,4 @@
-package com.example.library;
+package com.example.library.data;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +46,7 @@ public class LibraryDAO {
 		return book;
 	}
 
-	public synchronized Book deleteBook(int bookId) {
+	public Book deleteBook(int bookId) {
 		if (null != loanedBooks.stream().filter(book -> bookId == book.getBookId()).findFirst().orElse(null)) {
 			throw new MethodNotAllowedException(HttpMethod.DELETE.name(), null);
 		}
@@ -55,7 +55,15 @@ public class LibraryDAO {
 		return foundBook;
 	}
 
-	public synchronized Book loanBook(int memberId, int bookId) {
+	synchronized void updateLoanedBook(Book book, boolean isLoaned) {
+		if (isLoaned) {
+			loanedBooks.add(book);
+		} else {
+			loanedBooks.remove(book);
+		}
+	}
+
+	public Book loanBook(int memberId, int bookId) {
 		Book foundBook = books.stream().filter(book -> bookId == book.getBookId()).findFirst().get();
 		List<Book> loanedBooksToMember = Optional.ofNullable(membersInventory.get(memberId))
 				.orElse(new ArrayList<Book>());
@@ -65,13 +73,13 @@ public class LibraryDAO {
 		if (loanedBooks.contains(foundBook)) {
 			throw new MethodNotAllowedException(HttpMethod.GET.name(), null);
 		}
-		loanedBooks.add(foundBook);
+		updateLoanedBook(foundBook, true);
 		loanedBooksToMember.add(foundBook);
 		membersInventory.put(memberId, loanedBooksToMember);
 		return foundBook;
 	}
 
-	public synchronized Book returnBook(int memberId, int bookId) {
+	public Book returnBook(int memberId, int bookId) {
 		List<Book> loanedBooksToMember = membersInventory.get(memberId);
 		if (null == loanedBooksToMember) {
 			throw new NoSuchElementException();
@@ -81,11 +89,11 @@ public class LibraryDAO {
 			throw new NoSuchElementException();
 		}
 		loanedBooksToMember.remove(foundBook);
-		loanedBooks.remove(foundBook);
+		updateLoanedBook(foundBook, false);
 		membersInventory.put(memberId, loanedBooksToMember);
 		return foundBook;
 	}
-	
+
 	public List<Book> getBooksForMember(int memberId) {
 		List<Book> loanedBooksToMember = membersInventory.get(memberId);
 		if (null == loanedBooksToMember) {

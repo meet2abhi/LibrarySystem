@@ -6,7 +6,7 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
-import com.example.library.LibraryDAO;
+import com.example.library.data.LibraryDAO;
 import com.example.library.model.Book;
 
 @Component
