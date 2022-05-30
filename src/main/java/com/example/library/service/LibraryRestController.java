@@ -2,6 +2,7 @@ package com.example.library.service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -57,7 +58,7 @@ public class LibraryRestController {
 		return new ResponseEntity<>(libraryService.deleteBook(bookId), HttpStatus.CREATED);
 	}
 	
-	@GetMapping(value = "members/{memberId}/books/{bookId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "members/{memberId}/books/{bookId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Book> loanBook(
 			@PathVariable("memberId") int memberId,
 			@PathVariable("bookId") int bookId) {
@@ -71,9 +72,20 @@ public class LibraryRestController {
 		return new ResponseEntity<>(libraryService.returnBook(memberId, bookId), HttpStatus.CREATED);
 	}
 	
+	@DeleteMapping(value = "members/{memberId}/books", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Book>> returnBooks(
+			@PathVariable("memberId") int memberId) {
+		return new ResponseEntity<>(libraryService.returnBooks(memberId), HttpStatus.CREATED);
+	}
+	
 	@GetMapping(value = "members/{memberId}/books", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Book>> getBooksForMember(
 			@PathVariable("memberId") int memberId) {
 		return new ResponseEntity<>(libraryService.getBooksForMember(memberId), HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "members", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Map<Integer, List<Book>>> getAllLoanedBooks() {
+		return new ResponseEntity<>(libraryService.getAllLoanedBooks(), HttpStatus.OK);
 	}
 }

@@ -94,11 +94,25 @@ public class LibraryDAO {
 		return foundBook;
 	}
 
+	public List<Book> returnBooks(int memberId) {
+		List<Book> loanedBooksToMember = membersInventory.get(memberId);
+		if (null == loanedBooksToMember) {
+			throw new NoSuchElementException();
+		}
+		loanedBooksToMember.stream().forEach(book -> updateLoanedBook(book, false));
+		membersInventory.put(memberId, null);
+		return loanedBooksToMember;
+	}
+
 	public List<Book> getBooksForMember(int memberId) {
 		List<Book> loanedBooksToMember = membersInventory.get(memberId);
 		if (null == loanedBooksToMember) {
 			throw new NoSuchElementException();
 		}
 		return loanedBooksToMember;
+	}
+	
+	public Map<Integer, List<Book>> getAllLoanedBooks() {
+		return membersInventory;
 	}
 }

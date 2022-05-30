@@ -2,6 +2,7 @@ package com.example.library.service;
 
 import java.util.NoSuchElementException;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,10 +16,13 @@ public class LibraryControllerAdvice {
 	public ResponseEntity<Void> handleNotAvailableException(Exception exception) {
 		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 	}
-	
-	@ExceptionHandler( { MethodNotAllowedException.class })
+
+	@ExceptionHandler({ MethodNotAllowedException.class })
 	public ResponseEntity<Void> handleBookAlreadyLoanedException(Exception exception) {
-		return new ResponseEntity<>(null, HttpStatus.GONE);
+		return new ResponseEntity<>(null,
+				HttpMethod.DELETE.name().equals(((MethodNotAllowedException) exception).getHttpMethod())
+						? HttpStatus.METHOD_NOT_ALLOWED
+						: HttpStatus.GONE);
 	}
 
 }

@@ -1,6 +1,7 @@
 package com.example.library.service;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -39,7 +40,15 @@ public class LibraryService {
 		return libraryDao.returnBook(memberId, bookId);
 	}
 	
+	public List<Book> returnBooks(int memberId) {
+		return libraryDao.returnBooks(memberId);
+	}
+	
 	public List<Book> getBooksForMember(int memberId) {
 		return libraryDao.getBooksForMember(memberId);
+	}
+	
+	public Map<Integer, List<Book>> getAllLoanedBooks() {
+		return libraryDao.getAllLoanedBooks();
 	}
 }
